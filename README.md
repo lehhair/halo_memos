@@ -1,4 +1,4 @@
-使用https://github.com/adnanh/webhook完成
+使用 https://github.com/adnanh/webhook
 # 将你的memos发送到瞬间
 
 创建一个目录，在目录下新建config.yml文件，内容如下：
