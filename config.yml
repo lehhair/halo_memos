@@ -1,0 +1,6 @@
+halo:
+  url: "https://example.com"
+  token: "pat_eyxxxx"
+memos:
+  url: "https://example.com"
+  token: "eyxxxx"
