@@ -23,3 +23,8 @@ memos:
 ```shell
 docker run -d --name halo_memos -p 9000:9000 -e LANG=C.UTF-8 -v "${PWD}/config.yml:/config/config.yml" --restart always lehhair/halo_memos:latest -verbose -hooks="/config/hooks.yml" -hotreload
 ```
+最后将webhook地址填到memos
+如同
+`http://127.0.0.1:9000/hooks/memos`
+
+本脚本只同步公开发布的memos，图片功能仅支持使用对象存储的memos
