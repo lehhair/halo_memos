@@ -1,0 +1,6 @@
+- id: memos
+  execute-command: "/config/memos.sh"
+  command-working-directory: "/"
+  pass-arguments-to-command:
+    - source: entire-payload
+      name: ""
