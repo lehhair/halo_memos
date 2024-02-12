@@ -38,7 +38,7 @@ token='eyxxx'
 
 text=$(echo $json_string | jq '.body.note.text' | sed 's/^"//' | sed 's/"$//')
 image_links=$(echo "$json_string" | jq -r '.body.note.files[] | select(.type | startswith("image")) | "![image](\(.url))"' | tr -d '\n')
-content="#misskey\n$text$image_links"
+content="#misskey\n$text\n$image_links"
 
 curl -X POST \
      -H "Accept: application/json" \
