@@ -1,5 +1,12 @@
-使用 https://github.com/adnanh/webhook
 # 将你的memos发送到瞬间
+使用 https://github.com/adnanh/webhook
+## 构建docker镜像
+```bash
+git clone https://github.com/lehhair/halo_memos.git
+cd halo_memos
+docker build --no-cache -t halo_memos .
+```
+## 使用
 
 创建一个目录，在目录下新建config.yml文件，内容如下：
 
