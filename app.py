@@ -81,7 +81,8 @@ def halo(text,memos_url,memos_token):
 with open('/config/config.yml', 'r') as file:
     data = yaml.safe_load(file)
 
-post_url = f"{data['halo']['url']}/apis/api.plugin.halo.run/v1alpha1/plugins/PluginMoments/moments"
+# post_url = f"{data['halo']['url']}/apis/api.plugin.halo.run/v1alpha1/plugins/PluginMoments/moments"
+post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments"
 auth = f"Bearer {data['halo']['token']}"
 memos_url = f"{data['memos']['url']}/api/v1/memo"
 memos_token = data['memos']['token']
