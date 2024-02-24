@@ -22,11 +22,11 @@ RUN pyinstaller --onefile app.py
 FROM alpine:latest
 RUN apk add --no-cache bash jq tini
 COPY --from=BUILD_IMAGE /usr/local/bin/webhook /usr/local/bin/webhook
-COPY --from=PYTHON_BUILD /src/dist/app /config/app
+COPY --from=PYTHON_BUILD /src/dist/app /memos/app
 COPY ./config/hooks.yml /config/hooks.yml
 COPY ./config/memos.sh /config/memos.sh
 RUN chmod +x /config/memos.sh
-RUN chmod +x /config/app
+RUN chmod +x /memos/app
 WORKDIR /config
 EXPOSE 9000
 
