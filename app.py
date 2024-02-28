@@ -4,6 +4,14 @@ def md_text(message):
     return markdown.markdown(message)
 #格式化处理·markdown·
 
+def find_and_remove_image_links(markdown_text):
+    image_link_pattern = r'!\[.*\]\(.*\)\n?'
+    links_only_pattern = r'!\[.*\]\((.*)\)'
+    image_links = re.findall(links_only_pattern, markdown_text)
+    modified_text = re.sub(image_link_pattern, '', markdown_text)
+    modified_text = modified_text.rstrip('\n')
+    return image_links, modified_text
+#提取markdown中的图片链接
 
 def tags_text(text):
     pattern = r'```(.*?)```'
@@ -32,7 +40,7 @@ def process_code(text):
 #格式化处理·代码块·
 
 
-def get_external_link(url,createdTs,token):
+def get_external_link(url,createdTs,token,image_links):
     # 设置查询参数
     params = {
         'page': 1,
@@ -52,12 +60,16 @@ def get_external_link(url,createdTs,token):
                     myjson =  json.dumps({"type":"PHOTO","url":photo,"originType":"image/jpeg"})
                     myjson = json.loads(myjson)
                     json_list.append(myjson)
+    for i in image_links:
+        myjson =  json.dumps({"type":"PHOTO","url":i,"originType":"image/jpeg"})
+        myjson = json.loads(myjson)
+        json_list.append(myjson)
     return json_list
 #获取·memos图片外部链接·
 
 
-def myjson(s,date,tag,memos_url,createdTs,memos_token):
-    photo=get_external_link(memos_url,createdTs,memos_token)
+def myjson(s,date,tag,memos_url,createdTs,memos_token,image_links):
+    photo=get_external_link(memos_url,createdTs,memos_token,image_links)
     tags_list = [] if tag is None else tag
     myjson={"spec":{"content":{"raw":s,"html":s,"medium":photo},"releaseTime":date,"owner":"","visible":"PUBLIC","tags":tags_list},"metadata":{"generateName":"moment-"},"kind":"Moment","apiVersion":"moment.halo.run/v1alpha1"}
     myjson = json.dumps(myjson)
@@ -66,16 +78,20 @@ def myjson(s,date,tag,memos_url,createdTs,memos_token):
 #格式化处理输出·json·
 
 def halo(text,memos_url,memos_token):
+
     tags = tags_text(text)
     tags_list = tags[1]
     text = tags[0]
     text = process_code(text)
     text = text.replace('\n', '\n\n')
+
+    image_links, text = find_and_remove_image_links(text)#test 图片
+
     text = md_text(text)
     text = '<p style="">' + text + '</p>'
     date=os.environ.get('memos_date')
     createdTs=int(os.environ.get('createdTs'))
-    return myjson(text,date,tags_list,memos_url,createdTs,memos_token)
+    return myjson(text,date,tags_list,memos_url,createdTs,memos_token,image_links)
 #处理·halo·
 
 with open('/config/config.yml', 'r') as file:
