@@ -86,8 +86,12 @@ def halo(text,memos_url,memos_token):
     text = text.replace('\n', '\n\n')
 
     image_links, text = find_and_remove_image_links(text)#test 图片
-
+    b=[]
+    b.append(text)
+    print('修改后的文本:', b)
     text = md_text(text)
+    text = re.sub(r'^<p>', '', text, count=1)
+    text = re.sub(r'</p>$', '', text, count=1)
     text = '<p style="">' + text + '</p>'
     date=os.environ.get('memos_date')
     createdTs=int(os.environ.get('createdTs'))
