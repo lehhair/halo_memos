@@ -39,6 +39,21 @@ def process_code(text):
     return text
 #格式化处理·代码块·
 
+def spotify(text):
+    # 定义一个正则表达式来匹配Spotify歌曲链接
+    spotify_id = r'https?://open.spotify.com/track/([0-9A-Za-z]+)'
+    spotify_regex = r'https?://open\.spotify\.com/track/[0-9a-zA-Z]+(?:\?[^\s]*)?'
+    # 找到所有匹配的Spotify歌曲链接
+    track_ids = re.findall(spotify_id, text)
+    
+    urls = re.findall(spotify_regex,text)
+
+    for Id,url in zip(track_ids,urls):
+        iframe = f'<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/{Id}?utm_source=generator" width="260" height="80" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'
+        text = text.replace(url,iframe)
+    return text
+#生成spotify·卡片·
+
 
 def get_external_link(url,createdTs,token,image_links):
     # 设置查询参数
@@ -83,12 +98,9 @@ def halo(text,memos_url,memos_token):
     tags_list = tags[1]
     text = tags[0]
     text = process_code(text)
+    text = spotify(text)
     text = text.replace('\n', '\n\n')
-
     image_links, text = find_and_remove_image_links(text)#test 图片
-    b=[]
-    b.append(text)
-    print('修改后的文本:', b)
     text = md_text(text)
     text = re.sub(r'^<p>', '', text, count=1)
     text = re.sub(r'</p>$', '', text, count=1)
