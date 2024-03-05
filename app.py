@@ -1,5 +1,5 @@
 import os,requests,json,re,markdown,yaml
-
+from datetime import datetime, timezone
 def md_text(message):
     return markdown.markdown(message)
 #格式化处理·markdown·
@@ -49,7 +49,7 @@ def spotify(text):
     urls = re.findall(spotify_regex,text)
 
     for Id,url in zip(track_ids,urls):
-        iframe = f'<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/{Id}?utm_source=generator" width="260" height="80" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'
+        iframe = f'<iframe style="border-radius:12px" src="https://sp.lehhair.net/embed/track/{Id}?utm_source=generator" width="260" height="80" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'
         text = text.replace(url,iframe)
     return text
 #生成spotify·卡片·
@@ -110,24 +110,69 @@ def halo(text,memos_url,memos_token):
     return myjson(text,date,tags_list,memos_url,createdTs,memos_token,image_links)
 #处理·halo·
 
+def send(data):
+    post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments"
+    auth = f"Bearer {data['halo']['token']}"
+    memos_url = f"{data['memos']['url']}/api/v1/memo"
+    memos_token = data['memos']['token']
+
+    message = os.environ.get('MEMOS_MESSAGE')
+
+    memos = halo(message,memos_url,memos_token)
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': auth
+    }
+    response = requests.post(post_url, headers=headers, data=memos)
+
+    print(response.status_code)
+    print(response.text)
+
+
+def delete(data):
+    def convert_timestamp_to_iso(timestamp):
+        time_object = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        iso_format_time_string = time_object.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return iso_format_time_string
+
+    post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments?page=1&size=50&keyword=&startDate=&endDate="
+    auth = f"Bearer {data['halo']['token']}"
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': auth
+    }
+    response = requests.get(post_url, headers=headers)
+    resdata = json.loads(response.text)
+
+    createdTs = os.environ.get('createdTs')
+
+    datee = convert_timestamp_to_iso(int(createdTs))
+
+    matching_names = [
+        item['moment']['metadata']['name']
+        for item in resdata.get('items', [])
+        if item['moment']['spec']['releaseTime'] == datee
+    ]
+
+    name_value = matching_names[0] if matching_names else None
+
+    delete_url = f"{data['halo']['url']}/apis/moment.halo.run/v1alpha1/moments/{name_value}"
+    response = requests.delete(delete_url, headers=headers)
+    print(response.text)
+
+
 with open('/config/config.yml', 'r') as file:
     data = yaml.safe_load(file)
 
-# post_url = f"{data['halo']['url']}/apis/api.plugin.halo.run/v1alpha1/plugins/PluginMoments/moments"
-post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments"
-auth = f"Bearer {data['halo']['token']}"
-memos_url = f"{data['memos']['url']}/api/v1/memo"
-memos_token = data['memos']['token']
+activity = os.environ.get('activity') #获得memos状态
 
-message = os.environ.get('MEMOS_MESSAGE')
 
-memos = halo(message,memos_url,memos_token)
-
-headers = {
-    'Content-Type': 'application/json',
-    'Authorization': auth
-}
-response = requests.post(post_url, headers=headers, data=memos)
-
-print(response.status_code)
-print(response.text)
+if activity == "memos.memo.created":
+    send(data)
+elif activity == "memos.memo.updated":
+    delete(data)
+    send(data)
+elif activity == "memos.memo.deleted":
+    delete(data)
