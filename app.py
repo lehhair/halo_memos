@@ -1,5 +1,4 @@
 import os,requests,json,re,markdown,yaml
-from datetime import datetime, timezone
 def md_text(message):
     return markdown.markdown(message)
 #格式化处理·markdown·
@@ -131,11 +130,6 @@ def send(data):
 
 
 def delete(data):
-    def convert_timestamp_to_iso(timestamp):
-        time_object = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        iso_format_time_string = time_object.strftime('%Y-%m-%dT%H:%M:%SZ')
-        return iso_format_time_string
-
     post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments?page=1&size=50&keyword=&startDate=&endDate="
     auth = f"Bearer {data['halo']['token']}"
 
@@ -145,15 +139,12 @@ def delete(data):
     }
     response = requests.get(post_url, headers=headers)
     resdata = json.loads(response.text)
-
-    createdTs = os.environ.get('createdTs')
-
-    datee = convert_timestamp_to_iso(int(createdTs))
+    date = date=os.environ.get('memos_date')
 
     matching_names = [
         item['moment']['metadata']['name']
         for item in resdata.get('items', [])
-        if item['moment']['spec']['releaseTime'] == datee
+        if item['moment']['spec']['releaseTime'] == date
     ]
 
     name_value = matching_names[0] if matching_names else None
