@@ -130,7 +130,8 @@ def send(data):
 
 
 def delete(data):
-    post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments?page=1&size=50&keyword=&startDate=&endDate="
+    date = date=os.environ.get('memos_date')
+    post_url = f"{data['halo']['url']}/apis/console.api.moment.halo.run/v1alpha1/moments?page=1&size=20&keyword=&startDate={date}&endDate={date}"
     auth = f"Bearer {data['halo']['token']}"
 
     headers = {
@@ -139,7 +140,6 @@ def delete(data):
     }
     response = requests.get(post_url, headers=headers)
     resdata = json.loads(response.text)
-    date = date=os.environ.get('memos_date')
 
     matching_names = [
         item['moment']['metadata']['name']
