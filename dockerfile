@@ -13,7 +13,7 @@ RUN curl -#L -o webhook.tar.gz https://api.github.com/repos/adnanh/webhook/tarba
 FROM python:alpine AS PYTHON_BUILD
 RUN apk add --no-cache curl jq tini binutils && \
     apk add --no-cache --virtual .build-deps gcc musl-dev && \
-    pip install --no-cache-dir markdown requests pyyaml pyinstaller && \
+    pip install --no-cache-dir markdown requests pyyaml py-gfm pyinstaller && \
     apk del .build-deps  # remove build dependencies
 WORKDIR /src
 COPY app.py .  
