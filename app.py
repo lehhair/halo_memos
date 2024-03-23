@@ -1,6 +1,14 @@
 import os,requests,json,re,markdown,yaml
+from mdx_gfm import GithubFlavoredMarkdownExtension
 def md_text(message):
-    return markdown.markdown(message)
+    # html = markdown.markdown(
+    #     message, extensions=[GithubFlavoredMarkdownExtension()])
+
+    # md = markdown.Markdown(extensions=[GithubFlavoredMarkdownExtension()])
+    # html = md.convert(message)
+
+    # html = markdown.markdown(message, extensions=['mdx_gfm', 'extra'])
+    return markdown.markdown(message, extensions=['mdx_gfm', 'extra'])
 #格式化处理·markdown·
 
 def find_and_remove_image_links(markdown_text):
@@ -98,7 +106,7 @@ def halo(text,memos_url,memos_token):
     text = tags[0]
     text = process_code(text)
     text = spotify(text)
-    text = text.replace('\n', '\n\n')
+    # text = text.replace('\n', '\n\n')
     image_links, text = find_and_remove_image_links(text)#test 图片
     text = md_text(text)
     text = re.sub(r'^<p>', '', text, count=1)
