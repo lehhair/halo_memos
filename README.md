@@ -78,7 +78,12 @@ if [ "$reply_id" == "null" ] || [ "$reply_id" == "$note_id" ]; then
 fi
 ```
 docker命令,这个镜像额外增加了curl
+
 ```bash
 docker run -d --name halo_memos -p 127.0.0.1:9000:9000 -e LANG=C.UTF-8 -v "${PWD}:/config" --restart always lehhair/halo_memos:curl -verbose -hooks="/config/hooks.yml" -hotreload
 ```
 由于是挂载目录，需要你在目录提前放好配置文件和脚本，并且给脚本设置权限
+
+尝鲜镜像
+lehhair/halo_memos:test
+lehhair/halo_memos:test.1
